@@ -114,25 +114,26 @@
 
                 if (fullCmd === '') return;
 
-                // 隠しコマンドの判定部分
-                if (fullCmd.startsWith('/run play ')) {
-                    const videoId = fullCmd.replace('/run play ', '').trim();
-                    printLog("Connecting to secure proxy backend...");
-                    printLog("Streaming thread initialized.");
-                    
-                    setTimeout(() => {
-                        player.src = "https://youtube.com" + videoId + "?autoplay=1";
-                        videoContainer.style.display = 'block';
-                    }, 500);
-
-                } else if (baseCmd === 'help' || baseCmd === 'ls') {
-                    printLog("Available commands: ls, cd, cat, clear, exit");
-                } else if (baseCmd === 'clear') {
-                    log.innerHTML = '';
-                } else {
-                    printLog(`bash: ${baseCmd}: command not found`);
-                }
+                            // 隠しコマンドの判定部分
+            if (fullCmd.startsWith('/run play ')) {
+                const videoId = fullCmd.replace('/run play ', '').trim();
+                printLog("Connecting to secure proxy backend...");
+                printLog("Streaming thread initialized.");
                 
+                setTimeout(() => {
+                    // ここに「/embed/」が正しく入っています
+                    player.src = "https://youtube.com" + videoId + "?autoplay=1";
+                    videoContainer.style.display = 'block';
+                }, 500);
+
+            } else if (baseCmd === 'help' || baseCmd === 'ls') {
+                printLog("Available commands: ls, cd, cat, clear, exit");
+            } else if (baseCmd === 'clear') {
+                log.innerHTML = '';
+            } else {
+                printLog(`bash: ${baseCmd}: command not found`);
+            }
+
                 window.scrollTo(0, document.body.scrollHeight);
             }
         });
