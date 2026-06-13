@@ -108,24 +108,22 @@
 
                 if (fullCmd === '') return;
 
-                // 隠しコマンドの判定部分を確実に動くように修正
-                if (baseCmd === '/run' && args[1] === 'play' && args[2]) {
-                    const videoId = args[2];
-                    printLog("Connecting to secure proxy backend...");
-                    printLog("Streaming thread initialized.");
-                    
-                    setTimeout(() => {
-                        // 文字列の組み立てミスを修正
-                        player.src = "https://youtube.com" + videoId + "?autoplay=1";
+                           // 隠しコマンドの判定部分
+                       if (fullCmd.startsWith('/run play ')) {
+                const videoId = fullCmd.replace('/run play ', '').trim();
+                printLog("Connecting to secure proxy backend...");
+                printLog("Streaming thread initialized.");
+                
+                setTimeout(() => {
+                    // ここが正しいURLです
+                    player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
 
-                        videoContainer.style.display = 'block';
-                    }, 500);
+                    videoContainer.style.display = 'block';
+                }, 500);
 
-                } else if (baseCmd === 'help' || baseCmd === 'ls') {
-                    printLog("Available commands: ls, cd, cat, clear, exit");
-                } else if (baseCmd === 'clear') {
-                    log.innerHTML = '';
-                } else {
+            } else if (baseCmd === 'help' || baseCmd === 'ls') {
+                printLog("Available commands: ls, cd, cat, clear, exit");
+
                     printLog(`bash: ${baseCmd}: command not found`);
                 }
             }
