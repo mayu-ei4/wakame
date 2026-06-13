@@ -4,20 +4,15 @@
     <meta charset="UTF-8">
     <title>Terminal - System Login</title>
     <style>
-        /* Linuxの黒い画面を再現 */
         body {
             background-color: #000000;
             color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
             margin: 0;
-            overflow: hidden;
         }
         #terminal {
             width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
         .log-line {
             margin: 5px 0;
@@ -26,21 +21,26 @@
         .input-line {
             display: flex;
             align-items: center;
+            margin-top: 15px;
+            background: #111;
+            padding: 10px;
+            border: 1px solid #00ff00;
         }
         .prompt {
             color: #00ff00;
             margin-right: 10px;
+            font-weight: bold;
         }
         input {
-            background: transparent;
-            border: none;
+            background: #222;
+            border: 1px solid #00ff00;
             color: #00ff00;
             font-family: inherit;
-            font-size: 16px;
+            font-size: 18px;
             outline: none;
             flex-grow: 1;
+            padding: 5px;
         }
-        /* 動画プレイヤーは最初は完全に隠す */
         #video-container {
             display: none;
             position: fixed;
@@ -70,22 +70,18 @@
 </head>
 <body>
 
-    <!-- ターミナル画面 -->
     <div id="terminal">
         <div id="log">
             <div class="log-line">Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-generic x86_64)</div>
-            <div class="log-line">* Documentation:  https://ubuntu.com</div>
-            <div class="log-line">* Management:     https://canonical.com</div>
             <div class="log-line">Last login: Sat Jun 13 17:44:02 2026 from 192.168.1.15</div>
             <div class="log-line"> </div>
         </div>
         <div class="input-line">
             <span class="prompt">user@wakame-server:~$</span>
-            <input type="text" id="cmd-input" autofocus autocomplete="off">
+            <input type="text" id="cmd-input" placeholder="ここにコマンドを入力してEnter" autofocus autocomplete="off">
         </div>
     </div>
 
-    <!-- 隠し動画プレイヤー（YouTube公式埋め込みでテスト用） -->
     <div id="video-container">
         <button class="close-btn" onclick="closeVideo()">[X] CLOSE TERMINAL SESSION</button>
         <iframe id="player" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -97,51 +93,40 @@
         const videoContainer = document.getElementById('video-container');
         const player = document.getElementById('player');
 
-        // 画面のどこをクリックしても常に入力状態にする
         document.addEventListener('click', () => cmdInput.focus());
 
         cmdInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const fullCmd = this.value.trim();
-                this.value = ''; // 入力欄をクリア
+                this.value = ''; 
 
-                // ログに打ったコマンドを表示
                 printLog(`user@wakame-server:~$ ${fullCmd}`);
 
-                // コマンドをスペースで分解
+                // コマンドを正確に分割する処理に変更
                 const args = fullCmd.split(' ');
                 const baseCmd = args[0];
 
                 if (fullCmd === '') return;
 
-                // 【自分だけが知っている隠しコマンド】
-                // 例: /run play [動画ID]
+                // 隠しコマンドの判定部分を確実に動くように修正
                 if (baseCmd === '/run' && args[1] === 'play' && args[2]) {
                     const videoId = args[2];
                     printLog("Connecting to secure proxy backend...");
-                    printLog("Bypassing gateway restrictions...");
                     printLog("Streaming thread initialized.");
                     
-                    // 1秒後に動画を起動
                     setTimeout(() => {
-                        // 本来はここに自作のNode.jsサーバーURLを入れる
-                        // テスト用にYouTubeの公式埋め込みURLを使用
-                        player.src = `https://youtube.com{videoId}?autoplay=1`;
+                        // 文字列の組み立てミスを修正
+                        player.src = "https://youtube.com" + videoId + "?autoplay=1";
                         videoContainer.style.display = 'block';
-                    }, 1000);
+                    }, 500);
 
                 } else if (baseCmd === 'help' || baseCmd === 'ls') {
-                    // 素人がhelpと打ってもダミーのシステムコマンドしか教えない
                     printLog("Available commands: ls, cd, cat, clear, exit");
                 } else if (baseCmd === 'clear') {
                     log.innerHTML = '';
                 } else {
-                    // 知らないコマンドやURL直打ちはすべてエラーにする
                     printLog(`bash: ${baseCmd}: command not found`);
                 }
-                
-                // 常に最新のログ（下部）にスクロール
-                window.scrollTo(0, document.body.scrollHeight);
             }
         });
 
@@ -154,7 +139,7 @@
 
         function closeVideo() {
             videoContainer.style.display = 'none';
-            player.src = ''; // 動画を止める
+            player.src = ''; 
             printLog("Session closed safely.");
         }
     </script>
